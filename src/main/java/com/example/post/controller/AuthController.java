@@ -1,5 +1,7 @@
 package com.example.post.controller;
 
+import com.example.post.dto.AuthenticationResponse;
+import com.example.post.dto.LoginRequest;
 import com.example.post.dto.RegisterRequest;
 import com.example.post.service.AuthService;
 
@@ -36,6 +38,11 @@ public class AuthController {
     public ResponseEntity<String> verifyAccount(@PathVariable String token) {
         authService.verifyAccount(token);
         return new ResponseEntity<>("Account activated successfully", HttpStatus.OK);
+    }
+
+    @PostMapping("/login")
+    public AuthenticationResponse login(@RequestBody LoginRequest loginRequest) {
+        return authService.login(loginRequest);
     }
 
 }

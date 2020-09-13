@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+
 @Service
 public class UserDetailsServiceImp implements UserDetailsService {
 
@@ -26,6 +27,8 @@ public class UserDetailsServiceImp implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
+    // read user info from database, and
+    // the returned UserDetails will return to authentication manager
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> optionalUser = userRepository.findByUserName(username);

@@ -42,7 +42,7 @@ public class AuthServiceImp implements AuthService {
         this.mailService = mailService;
     }
 
-    // rollback when runtime exception occured
+    // Transactional : rollback when runtime exception occured
     @Transactional
     @Override
     public void register(RegisterRequest registerRequest) {
@@ -114,7 +114,7 @@ public class AuthServiceImp implements AuthService {
 
         // get value (User object) from optional container
         User userFound = optionalUserFound.get();
-        // change validation info to true and save user
+        // change validation info to true and update user
         userFound.setValidated(true);
         userRepository.save(userFound);
 

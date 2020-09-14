@@ -6,6 +6,7 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 
@@ -17,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 
 @Service
@@ -56,5 +58,30 @@ public class JwtProvider {
         } catch(KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException e) {
             throw new SpringPostException("Exception occured while getting key from keyStore", e);
         }
+    }
+
+    // we previously created token by siging private key from keyStore, and
+    // now we will validate the token by using public key
+    public boolean validateToken(String jwt) {
+        Jwts.parser().setSigningKey(getPublicKey()).parseClaimsJwt(jwt);
+        return true;
+    }
+
+    private PublicKey getPublicKey() {
+        try {
+            return keyStore.getCertificate("blog-frontend").getPublicKey();
+
+        } catch(KeyStoreException e) {
+            throw new SpringPostException("Exception occured while retrieving public key", e);
+        }
+    }
+
+    public String getUserNameFromJwt(String token) {
+        Claims claims = Jwts.parser()
+                    .setSigningKey(getPublicKey())
+                    .parseClaimsJws(token)
+                    .getBody();
+        // we have set user name as a subject when creating a token
+        return claims.getSubject();
     }
 }

@@ -90,5 +90,9 @@ public class Subpost {
         return subpostId;
     }
 
+    public void setSubpostId(Long subpostId) {
+        this.subpostId = subpostId;
+    }
+
 
 }

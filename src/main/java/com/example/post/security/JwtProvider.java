@@ -63,8 +63,23 @@ public class JwtProvider {
     // we previously created token by siging private key from keyStore, and
     // now we will validate the token by using public key
     public boolean validateToken(String jwt) {
-        Jwts.parser().setSigningKey(getPublicKey()).parseClaimsJwt(jwt);
-        return true;
+        
+        try {
+            Jwts.parser().setSigningKey(getPublicKey()).parseClaimsJws(jwt);
+
+            // test
+            System.out.println("validateToken, token : " + jwt);
+            System.out.println("validateToken, token parsed : " + Jwts.parser().setSigningKey(getPublicKey()).parseClaimsJws(jwt));
+
+            return true;
+
+        } catch(SpringPostException e) {
+            throw new SpringPostException("Token cannot be validated successfully");
+        }
+
+        
+
+ 
     }
 
     private PublicKey getPublicKey() {
@@ -81,6 +96,10 @@ public class JwtProvider {
                     .setSigningKey(getPublicKey())
                     .parseClaimsJws(token)
                     .getBody();
+
+        // test
+        System.out.println("claims.getSubject() : " + claims.getSubject());
+
         // we have set user name as a subject when creating a token
         return claims.getSubject();
     }

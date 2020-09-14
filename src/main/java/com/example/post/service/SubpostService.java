@@ -9,6 +9,7 @@ public interface SubpostService {
 
     SubpostDto create(SubpostDto subpostDto);
 	List<SubpostDto> getAllSubposts();
+	SubpostDto getSingleSubpost(Long id);
 
     
 }

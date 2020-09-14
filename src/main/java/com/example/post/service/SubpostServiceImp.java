@@ -3,9 +3,11 @@ package com.example.post.service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.example.post.dto.SubpostDto;
+import com.example.post.exception.SpringPostException;
 import com.example.post.model.Subpost;
 import com.example.post.repository.SubpostRepository;
 
@@ -45,6 +47,18 @@ public class SubpostServiceImp implements SubpostService {
 
     }
 
+    @Override
+    public SubpostDto getSingleSubpost(Long id) {
+        Optional<Subpost> subpostOptional = subpostRepository.findById(id);
+        subpostOptional.orElseThrow(() -> 
+                new SpringPostException("Subpost not found with id " + id));
+        
+        Subpost subpostFound = subpostOptional.get();
+        SubpostDto subpostDto = mapToSubpostDto(subpostFound);
+        return subpostDto;
+    }
+         
+
     private Subpost mapFromSubpostDto(SubpostDto subpostDto) {
         Subpost subpost = new Subpost();
         subpost.setCategory(subpostDto.getSubpostName());
@@ -62,5 +76,6 @@ public class SubpostServiceImp implements SubpostService {
         return subpostDto;
 
     }
-          
+
+ 
 }

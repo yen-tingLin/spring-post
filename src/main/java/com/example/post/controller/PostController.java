@@ -41,11 +41,11 @@ public class PostController {
                         .body(postService.getAllPosts());
     }
 
-    // @GetMapping("/{id}")
-    // public ResponseEntity<PostResponse> getSinglePost(@PathVariable Long id) {
-    //     return ResponseEntity.status(HttpStatus.OK)
-    //                     .body(postService.getSinglePost(id));       
-    // }
+    @GetMapping("/{id}")
+    public ResponseEntity<PostResponse> getSinglePost(@PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK)
+                        .body(postService.getSinglePost(id));       
+    }
 
     // // get post by category
     // @GetMapping("/by-subpost/{id}")

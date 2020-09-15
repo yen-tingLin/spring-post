@@ -37,7 +37,7 @@ public class MailService {
 
         try {
             mailSender.send(messagePreparator);
-            log.info("Activation email sent");
+            log.info("Email sent");
             
         } catch(MailException e) {
             log.error("Exception occured when sending email", e);

@@ -20,8 +20,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.extern.slf4j.Slf4j;
+
 
 @Service
+@Slf4j
 public class PostServiceImp implements PostService {
 
     private final PostRepository postRepository;
@@ -87,6 +90,10 @@ public class PostServiceImp implements PostService {
                         new SpringPostException("Subpost not found with id " + Long.toString(subpostId)));
         // get post list by subpost
         Subpost subpostFound = subpostOptional.get();
+
+        // test
+        log.info("category id is " + subpostFound.getSubpostId());
+
         List<Post> postList = postRepository.findBySubpost(subpostFound);     
         return postList.stream()
                         .map(this::mapToPostResponse)

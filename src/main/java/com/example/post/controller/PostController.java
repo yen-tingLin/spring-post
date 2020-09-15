@@ -47,12 +47,12 @@ public class PostController {
                         .body(postService.getSinglePost(id));       
     }
 
-    // // get post by category
-    // @GetMapping("/by-subpost/{id}")
-    // public ResponseEntity<List<PostResponse>> getPostBySubpost(@PathVariable Long id) {
-    //     return ResponseEntity.status(HttpStatus.OK)
-    //                     .body(postService.getPostBySubpost(id));            
-    // }
+    // get post by category
+    @GetMapping("/by-subpost/{id}")
+    public ResponseEntity<List<PostResponse>> getPostBySubpost(@PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK)
+                        .body(postService.getPostBySubpost(id));            
+    }
     
     // @GetMapping("/by-user/{name}")
     // public ResponseEntity<List<PostResponse>> getPostByUserName(@PathVariable String userName) {

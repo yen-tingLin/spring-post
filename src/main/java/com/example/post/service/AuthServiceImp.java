@@ -20,6 +20,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -164,6 +165,21 @@ public class AuthServiceImp implements AuthService {
 
         String authenticatedToken = jwtProvider.generateToken(authentication);
         return new AuthenticationResponse(loginRequest.getUserName(), authenticatedToken);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public User getCurrentUser() {
+        org.springframework.security.core.userdetails.User principal =
+            (org.springframework.security.core.userdetails.User) SecurityContextHolder
+                                                        .getContext()
+                                                        .getAuthentication()
+                                                        .getPrincipal();
+        Optional<User> userOptional = userRepository.findByUserName(principal.getUsername());
+        userOptional.orElseThrow(() -> 
+                new UsernameNotFoundException("User not found with name " + principal.getUsername()));
+        
+        return userOptional.get();
     }
 
     

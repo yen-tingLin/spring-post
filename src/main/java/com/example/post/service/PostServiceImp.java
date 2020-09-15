@@ -30,17 +30,20 @@ public class PostServiceImp implements PostService {
     private final PostRepository postRepository;
     private final SubpostRepository subpostRepository;
     private final AuthService authService;
+    private final UserRepository userRepository;
 
 
     @Autowired
     public PostServiceImp(
         PostRepository postRepository,
         SubpostRepository subpostRepository,
-        AuthService authService) 
+        AuthService authService,
+        UserRepository userRepository) 
     {
         this.postRepository = postRepository;
         this.subpostRepository = subpostRepository;
         this.authService = authService;
+        this.userRepository = userRepository;
     }
 
     @Transactional
@@ -100,19 +103,22 @@ public class PostServiceImp implements PostService {
                         .collect(Collectors.toList());
     }
 
-    // @Transactional(readOnly = true)
-    // @Override
-    // public List<PostResponse> getPostByUserName(String userName) {
-    //     // get user object by userName
-    //     Optional<User> userOptional = userRepository.findByUserName(userName);
-    //     userOptional.orElseThrow(() -> new UsernameNotFoundException(userName));
-    //     // get post list by user object
-    //     User userFound = userOptional.get();
-    //     List<Post> postListByUser = postRepository.findByUser(userFound);
-    //     return postListByUser.stream()
-    //                         .map(this::mapToPostResponse)
-    //                         .collect(Collectors.toList());
-    // }
+    @Transactional(readOnly = true)
+    @Override
+    public List<PostResponse> getPostByUserName(String userName) {
+        // get user object by userName
+        Optional<User> userOptional = userRepository.findByUserName(userName);
+        userOptional.orElseThrow(() -> new UsernameNotFoundException(userName));
+        // get post list by user object
+        User userFound = userOptional.get();
+                            // List<Post>
+        List<Post> postListByUser = postRepository.findByUser(userFound);
+                            // stream<Post>
+        return postListByUser.stream()
+                            // stream<PostResponse>
+                            .map(this::mapToPostResponse)
+                            .collect(Collectors.toList());
+    }
 
 
     private Post mapFromPostRequest(PostRequest postRequest) {

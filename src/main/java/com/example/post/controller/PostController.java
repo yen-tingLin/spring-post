@@ -54,11 +54,11 @@ public class PostController {
                         .body(postService.getPostBySubpost(id));            
     }
     
-    // @GetMapping("/by-user/{name}")
-    // public ResponseEntity<List<PostResponse>> getPostByUserName(@PathVariable String userName) {
-    //     return ResponseEntity.status(HttpStatus.OK)
-    //                     .body(postService.getPostByUserName(userName)); 
-    // } 
+    @GetMapping("/by-user/{userName}")
+    public ResponseEntity<List<PostResponse>> getPostByUserName(@PathVariable String userName) {
+        return ResponseEntity.status(HttpStatus.OK)
+                        .body(postService.getPostByUserName(userName)); 
+    } 
 
 
 }

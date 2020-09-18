@@ -8,5 +8,6 @@ public interface CommentService {
 
 	void createComent(CommentDto commentDto);
 	List<CommentDto> getAllCommentForPost(Long postId);
+	List<CommentDto> getAllCommentForUserName(String userName);
     
 }

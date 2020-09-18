@@ -11,9 +11,11 @@ import com.example.post.exception.SpringPostException;
 import com.example.post.model.Post;
 import com.example.post.model.Subpost;
 import com.example.post.model.User;
+import com.example.post.repository.CommentRepository;
 import com.example.post.repository.PostRepository;
 import com.example.post.repository.SubpostRepository;
 import com.example.post.repository.UserRepository;
+import com.github.marlonlom.utilities.timeago.TimeAgo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -31,6 +33,7 @@ public class PostServiceImp implements PostService {
     private final SubpostRepository subpostRepository;
     private final AuthService authService;
     private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
 
 
     @Autowired
@@ -38,12 +41,14 @@ public class PostServiceImp implements PostService {
         PostRepository postRepository,
         SubpostRepository subpostRepository,
         AuthService authService,
-        UserRepository userRepository) 
+        UserRepository userRepository,
+        CommentRepository commentRepository) 
     {
         this.postRepository = postRepository;
         this.subpostRepository = subpostRepository;
         this.authService = authService;
         this.userRepository = userRepository;
+        this.commentRepository = commentRepository;
     }
 
     @Transactional
@@ -55,10 +60,6 @@ public class PostServiceImp implements PostService {
 
         newPost.setUser(currentUser);
         postRepository.save(newPost);
-
-        // postRequest.setId(postSaved.getPostId());
-        // // test
-        // System.out.println("postRequest id " + postRequest.getId());
 
     }
 
@@ -135,6 +136,7 @@ public class PostServiceImp implements PostService {
         // set subpost in post
         Subpost subpostFound = subpostOptional.get();
         post.setSubpost(subpostFound);
+        post.setVoteCount(0);
 
         return post;
     }
@@ -147,6 +149,17 @@ public class PostServiceImp implements PostService {
         postResponse.setDescription(post.getDescription());
         postResponse.setUserName(post.getUser().getUserName());
         postResponse.setUrl(post.getUrl());
+        
+        // set number of comments for the post
+        Integer commentCount = commentRepository.findAllByPost(post).size();
+        postResponse.setCommentCount(commentCount);
+
+        // set vote count
+        postResponse.setVoteCount(post.getVoteCount());
+
+        // set duration
+        String duration = TimeAgo.using(post.getPublishDate().toEpochMilli());
+        postResponse.setDuration(duration);
 
         return postResponse;
     }

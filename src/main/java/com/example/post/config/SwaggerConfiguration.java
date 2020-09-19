@@ -33,7 +33,7 @@ public class SwaggerConfiguration extends WebMvcConfigurationSupport {
                 .title("Spring Post API")
                 .version("1.0")
                 .description("API for Spring Post Application")
-                .contact(new Contact("Sai Upadhyayula", "http://programmingtechie.com", "xyz@email.com"))
+                .contact(new Contact("Sai Upadhyayula & Ting", "http://programmingtechie.com", "xyz@email.com"))
                 .license("Apache Liscense Version 2.0")
                 .build();
     }

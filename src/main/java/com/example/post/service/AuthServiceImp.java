@@ -6,9 +6,11 @@ import java.util.UUID;
 
 import com.example.post.dto.AuthenticationResponse;
 import com.example.post.dto.LoginRequest;
+import com.example.post.dto.RefreshTokenRequest;
 import com.example.post.dto.RegisterRequest;
 import com.example.post.exception.SpringPostException;
 import com.example.post.model.NotificationEmail;
+import com.example.post.model.RefreshToken;
 import com.example.post.model.User;
 import com.example.post.model.VerificationToken;
 import com.example.post.repository.UserRepository;
@@ -37,16 +39,14 @@ public class AuthServiceImp implements AuthService {
     private final MailService mailService;
     private final AuthenticationManager authenticationManager;
     private final JwtProvider jwtProvider;
+    private final RefreshTokenService refreshTokenService;
 
     // constructor injection
     @Autowired
-    AuthServiceImp(
-        UserRepository userRepository, 
-        PasswordEncoder passwordEncoder,
-        VerificationTokenRepository verificationTokenRepository, 
-        MailService mailService,
-        AuthenticationManager authenticationManager,
-        JwtProvider jwtProvider) 
+    AuthServiceImp(UserRepository userRepository, PasswordEncoder passwordEncoder,
+            VerificationTokenRepository verificationTokenRepository, MailService mailService,
+            AuthenticationManager authenticationManager, JwtProvider jwtProvider,
+            RefreshTokenService refreshTokenService) 
     {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -54,6 +54,7 @@ public class AuthServiceImp implements AuthService {
         this.mailService = mailService;
         this.authenticationManager = authenticationManager;
         this.jwtProvider = jwtProvider;
+        this.refreshTokenService = refreshTokenService;
     }
 
     // Transactional : rollback when runtime exception occured
@@ -77,9 +78,8 @@ public class AuthServiceImp implements AuthService {
         notificationEmail.setSubject("Please activate your account");
         notificationEmail.setRecipient(newUser.getEmail());
         notificationEmail.setBody(
-                "Thank you for signing up to SpringPost, " + 
-                "please click on the below url to activate your account : " + 
-                "http://localhost:8092/api/auth/accountVerification/" + token);
+                "Thank you for signing up to SpringPost, " + "please click on the below url to activate your account : "
+                        + "http://localhost:8092/api/auth/accountVerification/" + token);
 
         mailService.sendMail(notificationEmail);
 
@@ -146,40 +146,58 @@ public class AuthServiceImp implements AuthService {
         // validUser.isValidated());
     }
 
-
     @Override
     public AuthenticationResponse login(LoginRequest loginRequest) {
         // create UsernamePasswordAuthenticationToken object, and
-        // pass it to AuthenticationManager method which then call UserDetailsService. 
+        // pass it to AuthenticationManager method which then call UserDetailsService.
         // This authenticationManager will find the cretential in the background,
-        // if they are matching, authenticationManager return an object called Authentication
+        // if they are matching, authenticationManager return an object called
+        // Authentication
         Authentication authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(
-                loginRequest.getUserName(), loginRequest.getPassword()));
+                new UsernamePasswordAuthenticationToken(loginRequest.getUserName(), loginRequest.getPassword()));
 
         // store the authentication object into the security context.
-        // If we want to check a user is logged in or not, we can just 
+        // If we want to check a user is logged in or not, we can just
         // look up the security context for the authentication object,
         // and if the authentication object is found, the user is logged in.
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String authenticatedToken = jwtProvider.generateToken(authentication);
-        return new AuthenticationResponse(loginRequest.getUserName(), authenticatedToken);
+
+        AuthenticationResponse authenticationResponse = new AuthenticationResponse();
+        authenticationResponse.setUserName(loginRequest.getUserName());
+        authenticationResponse.setAuthenticationToken(authenticatedToken);
+        authenticationResponse.setExpiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()));
+        authenticationResponse.setRefreshToken(refreshTokenService.generateRefreshToken().getToken());
+
+        return authenticationResponse;
     }
 
     @Transactional(readOnly = true)
     @Override
     public User getCurrentUser() {
-        org.springframework.security.core.userdetails.User principal =
-            (org.springframework.security.core.userdetails.User) SecurityContextHolder
-                                                        .getContext()
-                                                        .getAuthentication()
-                                                        .getPrincipal();
+        org.springframework.security.core.userdetails.User principal = (org.springframework.security.core.userdetails.User) SecurityContextHolder
+                .getContext().getAuthentication().getPrincipal();
         Optional<User> userOptional = userRepository.findByUserName(principal.getUsername());
-        userOptional.orElseThrow(() -> 
-                new UsernameNotFoundException("User not found with name " + principal.getUsername()));
-        
+        userOptional.orElseThrow(
+                () -> new UsernameNotFoundException("User not found with name " + principal.getUsername()));
+
         return userOptional.get();
+    }
+
+    @Override
+    public AuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
+
+        refreshTokenService.validateRefreshToken(refreshTokenRequest.getRefreshToken());
+        String token = jwtProvider.generateTokenWithUserName(refreshTokenRequest.getUserName());
+
+        AuthenticationResponse authenticationResponse = new AuthenticationResponse();
+        authenticationResponse.setAuthenticationToken(token);
+        authenticationResponse.setExpiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()));
+        authenticationResponse.setRefreshToken(refreshTokenRequest.getRefreshToken());
+        authenticationResponse.setUserName(refreshTokenRequest.getUserName());
+
+        return authenticationResponse;
     }
 
     

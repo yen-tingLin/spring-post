@@ -1,17 +1,16 @@
 package com.example.post.dto;
 
+import java.time.Instant;
+
 public class AuthenticationResponse {
 
     private String userName;
-    private String AuthenticationToken;
+    private String authenticationToken;
+    private String refreshToken;
+    private Instant expiresAt;
 
     
     public AuthenticationResponse() {}
-
-    public AuthenticationResponse(String userName, String authenticationToken) {
-        this.userName = userName;
-        AuthenticationToken = authenticationToken;
-    }
 
 
     public String getUserName() {
@@ -23,11 +22,27 @@ public class AuthenticationResponse {
     }
 
     public String getAuthenticationToken() {
-        return AuthenticationToken;
+        return this.authenticationToken;
     }
 
     public void setAuthenticationToken(String authenticationToken) {
-        AuthenticationToken = authenticationToken;
+        this.authenticationToken = authenticationToken;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
+    public Instant getExpiresAt() {
+        return expiresAt;
+    }
+
+    public void setExpiresAt(Instant expiresAt) {
+        this.expiresAt = expiresAt;
     }
 
 }

@@ -12,6 +12,7 @@ import com.example.post.service.RefreshTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/auth")
+@CrossOrigin(value = "http://localhost:4200", maxAge = 3600L)
 public class AuthController {
 
     private final AuthService authService;
@@ -37,10 +39,10 @@ public class AuthController {
     }
     
     @PostMapping("/register")
-    public ResponseEntity<RegisterRequest> register(@RequestBody RegisterRequest registerRequest) 
+    public ResponseEntity<String> register(@RequestBody RegisterRequest registerRequest) 
     {
         authService.register(registerRequest);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>("please check email and activate your acount", HttpStatus.OK);
     }
 
     @GetMapping("accountVerification/{token}")

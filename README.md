@@ -28,7 +28,7 @@ This project was generated with [Spring Boot](https://spring.io/projects/spring-
 * Get current user (author) <br />
 * Map post from container provided by front end
 	to container provided by back end <br />
-### refresh token
+### Refresh token
 * Find refresh token in database <br />
 * Generate new JWT authenticated token <br />
 * Wrap the token and send back to front end <br />

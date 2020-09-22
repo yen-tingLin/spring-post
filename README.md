@@ -9,7 +9,7 @@ This project was generated with [Spring Boot](https://spring.io/projects/spring-
 > Hibernate with MySQL database
 
 ## REST API Documentation Tool
-> [Swagger UI](https://swagger.io/tools/swagger-ui/) <br />
+> [Swagger UI](https://swagger.io/tools/swagger-ui/).  Navigate to `http://localhost:8092/swagger-ui.html#/` <br />
 > [Postman](https://www.postman.com/api-documentation-tool/)
 
 ## Briefly Descriptions

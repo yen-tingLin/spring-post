@@ -14,6 +14,7 @@ import com.example.post.model.User;
 import com.example.post.repository.CommentRepository;
 import com.example.post.repository.PostRepository;
 import com.example.post.repository.UserRepository;
+import com.github.marlonlom.utilities.timeago.TimeAgo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,7 +51,14 @@ public class CommentServiceImp implements CommentService {
     public void createComent(CommentDto commentDto) {
         Comment newComment = mapFromCommentDto(commentDto);
         // set comment with current user
-        newComment.setUser(authService.getCurrentUser());
+        //newComment.setUser(authService.getCurrentUser());
+        
+        Optional<User> userOptional = userRepository.findByUserName(commentDto.getUserName());
+        userOptional.orElseThrow(() -> 
+                        new SpringPostException("User not found with name " + commentDto.getUserName()));
+        
+        User userFound = userOptional.get();               
+        newComment.setUser(userFound);
 
         commentRepository.save(newComment);
 
@@ -112,7 +120,7 @@ public class CommentServiceImp implements CommentService {
         comment.setText(commentDto.getText());
         comment.setPublishDate(Instant.now());
         // find post by title and set comment with current user
-        Optional<Post> postOptional = postRepository.findByTitle(commentDto.getPostTitle());
+        Optional<Post> postOptional = postRepository.findById(commentDto.getPostId());
         postOptional.orElseThrow(() -> 
                 new SpringPostException("Post not found with title " + commentDto.getPostTitle()));
         Post postFound = postOptional.get();
@@ -129,6 +137,10 @@ public class CommentServiceImp implements CommentService {
         commentDto.setPostId(comment.getPost().getPostId());
         commentDto.setUserName(comment.getUser().getUserName());
         commentDto.setCreatedDate(comment.getPublishDate());
+
+        // set duration
+        String duration = TimeAgo.using(comment.getPublishDate().toEpochMilli());
+        commentDto.setDuration(duration);
 
         return commentDto;
     }

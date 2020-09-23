@@ -186,6 +186,8 @@ public class AuthServiceImp implements AuthService {
             throw new SpringPostException("principal is null");
         }
 
+        log.info("user name from sacurity context : " + principal.getUsername());
+
         Optional<User> userOptional = userRepository.findByUserName(principal.getUsername());
         userOptional.orElseThrow(
                 () -> new UsernameNotFoundException("User not found with name " + principal.getUsername()));
@@ -211,6 +213,7 @@ public class AuthServiceImp implements AuthService {
     @Override
     public boolean isLoggedIn() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
         return !(authentication instanceof AnonymousAuthenticationToken)
                     && authentication.isAuthenticated();
 

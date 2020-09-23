@@ -7,7 +7,9 @@ public class PostRequest {
     private String subpostName;
     private String title;
     private String url;
-    private String description; 
+    private String description;
+    // optional
+    private String userName; 
 
     public PostRequest() {}
 
@@ -51,5 +53,15 @@ public class PostRequest {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    
 
 }

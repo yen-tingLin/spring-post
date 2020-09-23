@@ -6,6 +6,7 @@ public class VoteDto {
 
     private Long postId;
     private VoteType voteType;
+    private String userName;
 
     
     public VoteDto() {}
@@ -26,5 +27,14 @@ public class VoteDto {
     public void setVoteType(VoteType voteType) {
         this.voteType = voteType;
     }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
 
 }

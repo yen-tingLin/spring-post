@@ -44,6 +44,10 @@ public class PostServiceImp implements PostService {
         UserRepository userRepository,
         CommentRepository commentRepository) 
     {
+        if(authService == null) {
+            throw new SpringPostException("authService is null");
+        }
+        
         this.postRepository = postRepository;
         this.subpostRepository = subpostRepository;
         this.authService = authService;
@@ -56,9 +60,15 @@ public class PostServiceImp implements PostService {
     public void create(PostRequest postRequest) {
  
         Post newPost = mapFromPostRequest(postRequest);
-        User currentUser = authService.getCurrentUser();
 
-        newPost.setUser(currentUser);
+        //User currentUser = authService.getCurrentUser();
+
+        Optional<User> optionalUser = userRepository.findByUserName(postRequest.getUserName());
+        optionalUser.orElseThrow(() -> 
+                        new SpringPostException("User not found with name " + postRequest.getUserName()));
+        User userFound = optionalUser.get();
+        newPost.setUser(userFound);
+
         postRepository.save(newPost);
 
     }

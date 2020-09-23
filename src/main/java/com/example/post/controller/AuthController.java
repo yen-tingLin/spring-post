@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(value = "http://localhost:4200", maxAge = 3600L)
+@CrossOrigin(value = "http://localhost:4200")
 public class AuthController {
 
     private final AuthService authService;
@@ -71,7 +71,7 @@ public class AuthController {
     {
         refreshTokenService.deleteRefreshToken(refreshTokenRequest.getRefreshToken());            
         return ResponseEntity.status(HttpStatus.OK)
-                            .body("Refresh token deleted successfully");
+                            .body("Refresh token deleted successfully from back end");
         
     }
 

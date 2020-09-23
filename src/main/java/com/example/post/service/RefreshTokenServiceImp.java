@@ -11,8 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.extern.slf4j.Slf4j;
+
 
 @Service
+@Slf4j
 public class RefreshTokenServiceImp implements RefreshTokenService {
 
     private final RefreshTokenRepository refreshTokenRepository;
@@ -43,6 +46,8 @@ public class RefreshTokenServiceImp implements RefreshTokenService {
     @Override
     public void deleteRefreshToken(String token) {
         refreshTokenRepository.deleteByToken(token);
+
+        log.info("Refresh token deleted successfully");
     }
     
 }

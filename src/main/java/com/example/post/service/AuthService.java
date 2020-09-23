@@ -13,6 +13,7 @@ public interface AuthService {
     void verifyAccount(String token);
 	AuthenticationResponse login(LoginRequest loginRequest);
     User getCurrentUser();
-	AuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest);
+    AuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest);
+    boolean isLoggedIn();
 
 }

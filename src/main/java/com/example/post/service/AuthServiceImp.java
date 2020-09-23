@@ -18,6 +18,7 @@ import com.example.post.repository.VerificationTokenRepository;
 import com.example.post.security.JwtProvider;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -156,7 +157,7 @@ public class AuthServiceImp implements AuthService {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUserName(), loginRequest.getPassword()));
 
-        // store the authentication object into the security context.
+        // store the authentication object into the s.
         // If we want to check a user is logged in or not, we can just
         // look up the security context for the authentication object,
         // and if the authentication object is found, the user is logged in.
@@ -170,6 +171,8 @@ public class AuthServiceImp implements AuthService {
         authenticationResponse.setExpiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()));
         authenticationResponse.setRefreshToken(refreshTokenService.generateRefreshToken().getToken());
 
+        log.info(loginRequest.getUserName() + " logged in");
+
         return authenticationResponse;
     }
 
@@ -178,6 +181,11 @@ public class AuthServiceImp implements AuthService {
     public User getCurrentUser() {
         org.springframework.security.core.userdetails.User principal = (org.springframework.security.core.userdetails.User) SecurityContextHolder
                 .getContext().getAuthentication().getPrincipal();
+        
+        if(principal == null) {
+            throw new SpringPostException("principal is null");
+        }
+
         Optional<User> userOptional = userRepository.findByUserName(principal.getUsername());
         userOptional.orElseThrow(
                 () -> new UsernameNotFoundException("User not found with name " + principal.getUsername()));
@@ -200,6 +208,12 @@ public class AuthServiceImp implements AuthService {
         return authenticationResponse;
     }
 
-    
+    @Override
+    public boolean isLoggedIn() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return !(authentication instanceof AnonymousAuthenticationToken)
+                    && authentication.isAuthenticated();
+
+    }
  
 }

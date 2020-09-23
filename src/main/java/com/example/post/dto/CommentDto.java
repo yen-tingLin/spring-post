@@ -11,6 +11,8 @@ public class CommentDto {
     private String userName;
     private Instant createdDate;
 
+    private String duration;
+
     public CommentDto() {}
 
     
@@ -60,6 +62,14 @@ public class CommentDto {
 
     public void setCreatedDate(Instant createdDate) {
         this.createdDate = createdDate;
+    }
+
+    public String getDuration() {
+        return duration;
+    }
+
+    public void setDuration(String duration) {
+        this.duration = duration;
     }
 
     
